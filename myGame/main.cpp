@@ -130,8 +130,8 @@ void drawO(int i, int j) {
     float y = i * (SCREEN_HEIGHT / 3) + (SCREEN_HEIGHT / 6);
     float radius = 40;
     int num_segments = 30;
-    glColor3f(0.0, 0.0, 1.0); // Blue color
-    glLineWidth(9.0); // Set line width
+    glColor3f(0.0, 0.0, 1.0);                                     // blue color
+    glLineWidth(9.0);                                             // setting line width
     glBegin(GL_LINE_LOOP);
     for (int ii = 0; ii < num_segments; ii++) {
         float theta = 2.0f * 3.14159f * float(ii) / float(num_segments);
@@ -146,26 +146,24 @@ void drawO(int i, int j) {
 
 
 void drawMenu() {
-    // Clear the background to a neutral dark color
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+                                                                                  // clearing the background to a light blue color
+    glClearColor(0.68f, 0.85f, 0.90f, 1.0f);                                       // light blue color
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Draw a rectangle for the "Play" button with a highlight effect
+                                                                              // drawing a rectangle for the "Play" button with a highlight effect
     float playButtonX = SCREEN_WIDTH / 2 - 150;
     float playButtonY = SCREEN_HEIGHT / 2 - 50;
     float playButtonWidth = 300;
     float playButtonHeight = 100;
-
-    // Button background
-    glColor3f(0.3f, 0.3f, 0.3f); // Dark gray
+   
     drawRoundedRectangle(playButtonX, playButtonY, playButtonWidth, playButtonHeight, 20.0f, 10);
 
     // Button highlight
-    glColor4f(1.0f, 1.0f, 1.0f, 0.1f); // Soft white highlight
+    glColor4f(1.0f, 1.0f, 1.0f, 0.1f);                                                        // soft white highlight
     drawRoundedRectangle(playButtonX, playButtonY - playButtonHeight * 0.1f, playButtonWidth, playButtonHeight * 0.7f, 20.0f, 10);
 
-    // Draw the "Play" text centered in the button
-    glColor3f(1.0f, 1.0f, 1.0f); // White color for text
+                                                                               // drawing the "Play" text so that it'll be centered in the button
+    glColor3f(1.0f, 1.0f, 1.0f);                                                              // setting white color for the text
     drawCenteredText("Play", playButtonX, playButtonY, playButtonWidth, playButtonHeight);
 }
 void handleMenuInput(GLFWwindow* window, int button, int action, int mods) {
@@ -173,11 +171,11 @@ void handleMenuInput(GLFWwindow* window, int button, int action, int mods) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
 
-        // Check if "Play" button is clicked
+                                                                                        // checking whether "Play" button is clicked or not
         if (xpos >= SCREEN_WIDTH / 2 - 100 && xpos <= SCREEN_WIDTH / 2 + 100 &&
             ypos >= SCREEN_HEIGHT / 2 - 25 && ypos <= SCREEN_HEIGHT / 2 + 25) {
-            showMenu = false; // Hide menu and start the game
-            initBoard(); // Initialize the game board for a new game
+            showMenu = false;                                                            // hiding menu and to start the game
+            initBoard();                                                                 // initializing the game board for showing a new game
         }
     }
 }
@@ -186,12 +184,12 @@ void handleMenuInput(GLFWwindow* window, int button, int action, int mods) {
 
 
 void drawFancyText(const char* text, float x, float y) {
-    // Example of fancy text rendering using bitmap fonts
-    glColor3f(1.0, 1.0, 1.0); // White color
-    glRasterPos2f(x, y); // Set the position for the text
+                                                                                   // Example of fancy text rendering using bitmap fonts
+    glColor3f(1.0, 1.0, 1.0);                                                      // White color
+    glRasterPos2f(x, y);                                                           // setting the position for the text
 
     for (const char* c = text; *c != '\0'; c++) {
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c); // Draw each character using a bitmap font
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);                      // drawing each character using a bitmap font
     }
 }
 
@@ -206,30 +204,30 @@ void drawRoundedRectangle(float x, float y, float width, float height, float rad
     glColor3f(1.0, 0.5, 0.0);                                                               // Orange color
     glBegin(GL_POLYGON);
 
-    // Draw the rectangle with rounded corners
+                                                                                // drawing the rectangle with rounded corners
     for (int i = 0; i < num_segments; ++i) {
         float theta = 2.0f * 3.1415926f * float(i) / float(num_segments);
         float dx = radius * cosf(theta);
         float dy = radius * sinf(theta);
 
-        // Each corner
-        glVertex2f(x + radius + dx, y + radius + dy); // Top-left
-        glVertex2f(x + width - radius + dx, y + radius + dy); // Top-right
-        glVertex2f(x + width - radius + dx, y + height - radius + dy); // Bottom-right
-        glVertex2f(x + radius + dx, y + height - radius + dy); // Bottom-left
+                                                                            // each line represents each corner of the rectangle
+        glVertex2f(x + radius + dx, y + radius + dy);                                      // Top-left
+        glVertex2f(x + width - radius + dx, y + radius + dy);                              // Top-right
+        glVertex2f(x + width - radius + dx, y + height - radius + dy);                    // Bottom-right
+        glVertex2f(x + radius + dx, y + height - radius + dy);                             // Bottom-left
     }
 
     glEnd();
 }
 
 void drawCenteredText(const char* text, float x, float y, float width, float height) {
-    glColor3f(0.0, 0.0, 1.0); // Blue color
+    glColor3f(0.0, 0.0, 1.0);                                                                // Blue color
     glRasterPos2f(x + (width - glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)text)) / 2,
-        y + height / 2 + 7); // Center the text in the rectangle
+        y + height / 2 + 7);                                                                 // setting the text position of rectangle at center
 
-    // Render the text
+                                                                                             // rendering the text
     for (const char* c = text; *c != '\0'; c++) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c); // Using a thicker font
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);                                    // Using a thicker font
     }
 }
 
@@ -239,31 +237,31 @@ void displayGameOverMessage() {
     float boxX = (SCREEN_WIDTH - boxWidth) / 2;
     float boxY = (SCREEN_HEIGHT - boxHeight) / 2;
     float cornerRadius = 20.0f;
-    int cornerSegments = 50; // More segments for a smoother corner
+    int cornerSegments = 50;                                                                   //adding more segments for a smoother corner
 
-    // Draw rounded rectangle
+                                                                                                // drawing rounded rectangle
     drawRoundedRectangle(boxX, boxY, boxWidth, boxHeight, cornerRadius, cornerSegments);
 
-    // Draw centered text
+                                                                                                // drawing text at the center of the rectangle
     drawCenteredText("Game Over", boxX, boxY, boxWidth, boxHeight);
 }
 
 
-// creating main loop for the game
+                                                                                               // creating main loop for the game
 void mainLoop(GLFWwindow* window) {
     while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT); // Clearing the screen
+        glClear(GL_COLOR_BUFFER_BIT);                                                          // clearing the color buffer bit to set the background color
 
         if (showMenu) {
             drawMenu();
-            // Set the callback for the menu input
+                                                                                               // setting the callback for the menu input
             glfwSetMouseButtonCallback(window, handleMenuInput);
         }
         else {
-            drawBoard(); // Drawing the game board
+            drawBoard();                                                                       // drawing the game board with X and O symbols
 
             if (gameOver) {
-                // Display the game over message
+                                                                                              // displaying the game over message
                 const char* winnerMessage;
                 if (draw) {
                     winnerMessage = "It's a Draw!";
@@ -272,27 +270,27 @@ void mainLoop(GLFWwindow* window) {
                     winnerMessage = currentPlayer == 1 ? "Player X Wins!" : "Player O Wins!";
                 }
 
-                // The winner message will be displayed for 3 seconds
+                                                                                           // The winner message will be displayed for 5 seconds
                 displayGameOverMessage();
                 drawText(winnerMessage, SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 100);
 
-                glfwSwapBuffers(window); // Swap the buffers to display the message
-                waitFor(5.0); // Wait for 5 seconds to show the message
+                glfwSwapBuffers(window);                                             // swapping the front and back buffers to display the message
+                waitFor(5.0);                                                        // waiting for 5 seconds
 
-                // After showing the game over message, reset for the next game or exit
-                showMenu = true; // Show the menu again
-                initBoard(); // Reset the board for a new game
-                gameOver = false; // Reset the game over flag
-                draw = false; // Reset the draw flag
-                // Note: currentPlayer should probably not be reset here if you want the loser to start the next game
+                // after 5 seconds, the menu will be shown again to start a new game
+                showMenu = true;                                                       // showing the menu again 
+                initBoard();                                                           // resetting the game board for a new game
+                gameOver = false;                                                     // resetting the game over flag to false
+                draw = false;                                                           // resetting the draw flag to false
+                currentPlayer = 1;                                                     // setting the current player to 1
             }
 
-            // Set the callback for the game input if the menu is not being shown
+                                                                       // setting the callback for the mouse button input for the game board
             glfwSetMouseButtonCallback(window, mouseButtonCallback);
         }
 
-        glfwSwapBuffers(window); // Swapping the front and back buffers
-        glfwPollEvents(); // Poll for and process events
+        glfwSwapBuffers(window);                                       // swapping the front and back buffers to display the game board
+        glfwPollEvents();                                            // Poll for and process events like input, etc. to keep the window responsive
     }
 }
 
