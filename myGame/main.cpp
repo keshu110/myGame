@@ -6,11 +6,7 @@
 #include <SOIL/SOIL.h>    
 #include <GL/glu.h>
 #include <gl/GL.h>
-
 using namespace std;
-
-
-
                                                                     // prototyping the functions
 void drawBoard();
 void drawText(const char *text, float x, float y);
@@ -27,9 +23,6 @@ void drawCenteredText(const char* text, float x, float y, float width, float hei
 void displayGameOverMessage();
 void drawMenu();
 void handleMenuInput(GLFWwindow* window, int button, int action, int mods);
-
-
-
 
 
 // creating global variables
@@ -63,7 +56,9 @@ void waitFor(float seconds) {
 }
 
 void drawText(const char *text, float x, float y) {
-    glColor3f(1.0, 0.5, 0.5);                                    // light red
+    glColor3f(0.494f, 0.145f, 0.325f); // Color #7E2553
+
+
     glRasterPos2f(x, y);                                         // to set the position for the text
     for (const char *c = text; *c != '\0'; c++) {
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);     // drawing each character using a bitmap font
@@ -129,7 +124,8 @@ void drawO(int i, int j) {
     float y = i * (SCREEN_HEIGHT / 3) + (SCREEN_HEIGHT / 6);
     float radius = 40;
     int num_segments = 30;
-    glColor3f(0.0, 0.0, 1.0);                                     // blue color
+    glColor3f(0.718f, 0.788f, 0.949f); // Color #B7C9F2
+
     glLineWidth(9.0);                                             // setting line width
     glBegin(GL_LINE_LOOP);
     for (int ii = 0; ii < num_segments; ii++) {
@@ -180,27 +176,8 @@ void handleMenuInput(GLFWwindow* window, int button, int action, int mods) {
 }
 
 
-
-
-void drawFancyText(const char* text, float x, float y) {
-                                                                                   // Example of fancy text rendering using bitmap fonts
-    glColor3f(1.0, 1.0, 1.0);                                                      // White color
-    glRasterPos2f(x, y);                                                           // setting the position for the text
-
-    for (const char* c = text; *c != '\0'; c++) {
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);                      // drawing each character using a bitmap font
-    }
-}
-
-
-
-
-
-
-
-
 void drawRoundedRectangle(float x, float y, float width, float height, float radius, int num_segments) {
-    glColor3f(1.0, 0.5, 0.0);                                                               // Orange color
+    glColor3f(0.537f, 0.506f, 0.129f); // Color #898121       
     glBegin(GL_POLYGON);
 
                                                                                 // drawing the rectangle with rounded corners
@@ -220,7 +197,8 @@ void drawRoundedRectangle(float x, float y, float width, float height, float rad
 }
 
 void drawCenteredText(const char* text, float x, float y, float width, float height) {
-    glColor3f(0.0, 0.0, 1.0);                                                                // Blue color
+    glColor3f(0.514f, 0.753f, 0.757f); // Color #83C0C1
+
     glRasterPos2f(x + (width - glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)text)) / 2,
         y + height / 2 + 7);                                                                 // setting the text position of rectangle at center
 
@@ -339,10 +317,12 @@ void drawBoard() {
 
 
                                                                         // displaying the game over message if the game is over 
-    if (gameOver) {
+    if (gameOver) 
+    {
         const char* message = "Game Over";
         const char* winner = currentPlayer == 1 ? "Player O Wins!" : "Player X Wins!";
-        if (draw) {
+        if (draw) 
+        {
             winner = "It's a Draw!";
         }
 
