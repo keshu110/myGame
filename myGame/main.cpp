@@ -21,7 +21,6 @@ void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
 void initBoard();
 void waitFor(float seconds);
 void mainLoop(GLFWwindow *window);
-void loadGridTexture();
 void drawFancyText(const char* text, float x, float y);
 void drawRoundedRectangle(float x, float y, float width, float height, float radius, int num_segments);
 void drawCenteredText(const char* text, float x, float y, float width, float height);
@@ -296,78 +295,36 @@ void mainLoop(GLFWwindow* window) {
 
 
 
-void loadGridTexture() {
-    // Generate texture ID
-    glGenTextures(1, &gridTexture);
-
-    // Bind texture
-    glBindTexture(GL_TEXTURE_2D, gridTexture);
-
-    // Define texture parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Load texture image (assuming you have a texture file named "grid_texture.png")
-    int width, height, channels;
-    unsigned char* image = SOIL_load_image("grid_texture.png", &width, &height, &channels, SOIL_LOAD_RGBA);
-    if (image) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-
-        // Generate mipmaps manually
-        int levels = static_cast<int>(std::floor(std::log2(std::max(width, height)))) + 1;
-        for (int level = 1; level < levels; ++level) {
-            int levelWidth = std::max(1, width >> level);
-            int levelHeight = std::max(1, height >> level);
-            glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, levelWidth, levelHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-        }
-
-        SOIL_free_image_data(image);
-    }
-    else {
-        // Handle error
-        std::cerr << "Failed to load texture" << std::endl;
-    }
-
-    // Unbind texture
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-
-
-
-
 void drawBoard() {
-    // Set up gradient background
+                                                                       // setting the background color to a light blue color
     glClear(GL_COLOR_BUFFER_BIT);
     glBegin(GL_QUADS);
-    glColor3f(0.5, 0.7, 1.0); // Light blue
+    glColor3f(0.5, 0.7, 1.0);                                           // light blue color for the background
     glVertex2f(0, 0);
     glVertex2f(SCREEN_WIDTH, 0);
-    glColor3f(0.0, 0.3, 0.6); // Dark blue
+    glColor3f(0.0, 0.3, 0.6);                                           // dark blue color for the background
     glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
     glVertex2f(0, SCREEN_HEIGHT);
     glEnd();
 
-    // Draw textured grid lines
-    glEnable(GL_TEXTURE_2D); // Enable texturing
-    glBindTexture(GL_TEXTURE_2D, gridTexture); // Assuming gridTexture is the texture for grid lines
+                                                                         // drawing the grid lines for the game board
+    glEnable(GL_TEXTURE_2D);                                            // enable texturing for the grid lines
+    glBindTexture(GL_TEXTURE_2D, gridTexture);                           // assuming gridTexture is the texture ID
 
     glBegin(GL_LINES);
     for (int i = 1; i <= 2; i++) {
-        // Vertical lines
+                                                                         // Vertical lines
         glTexCoord2f(0.0, 0.0); glVertex2f(i * (SCREEN_WIDTH / 3), 0);
         glTexCoord2f(1.0, 0.0); glVertex2f(i * (SCREEN_WIDTH / 3), SCREEN_HEIGHT);
 
-        // Horizontal lines
+                                                                         // Horizontal lines
         glTexCoord2f(0.0, 0.0); glVertex2f(0, i * (SCREEN_HEIGHT / 3));
         glTexCoord2f(1.0, 0.0); glVertex2f(SCREEN_WIDTH, i * (SCREEN_HEIGHT / 3));
     }
     glEnd();
-    glDisable(GL_TEXTURE_2D); // Disable texturing
+    glDisable(GL_TEXTURE_2D);                                             // Disable texturing
 
-    // Draw X and O symbols
+                                                                          // drawing the X and O symbols on the game board
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             if (board[i][j] == 1) {
@@ -381,7 +338,7 @@ void drawBoard() {
 
 
 
-    // Display the end game message with fancy styling
+                                                                        // displaying the game over message if the game is over 
     if (gameOver) {
         const char* message = "Game Over";
         const char* winner = currentPlayer == 1 ? "Player O Wins!" : "Player X Wins!";
@@ -389,32 +346,28 @@ void drawBoard() {
             winner = "It's a Draw!";
         }
 
-        // Set up message box dimensions and position
+                                                                         // setting the message box dimensions and position
         float messageBoxWidth = 300;
         float messageBoxHeight = 100;
         float messageBoxX = (SCREEN_WIDTH - messageBoxWidth) / 2;
         float messageBoxY = (SCREEN_HEIGHT - messageBoxHeight) / 2;
 
-        // Draw a fancy message box background
-        glColor4f(0.2, 0.2, 0.2, 0.7); // Dark gray with transparency
+                                                                            // drawing the message box with color and transparency
+        glColor4f(0.56f, 0.93f, 0.56f, 0.7f);                              // Light green with some transparency
+
         glBegin(GL_QUADS);
         glVertex2f(messageBoxX, messageBoxY);
         glVertex2f(messageBoxX + messageBoxWidth, messageBoxY);
         glVertex2f(messageBoxX + messageBoxWidth, messageBoxY + messageBoxHeight);
         glVertex2f(messageBoxX, messageBoxY + messageBoxHeight);
         glEnd();
-
-        // Draw the message text with fancy font
-        glColor3f(1.0, 1.0, 1.0); // White color
-        drawFancyText(message, messageBoxX + 20, messageBoxY + 40); // Add function for drawing fancy text
-        drawFancyText(winner, messageBoxX + 20, messageBoxY + 70); // Add function for drawing fancy text
     }
 }
 
 
 
 
-// Callback function for mouse button events
+                                                                            // function to handle mouse button input 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && !gameOver) {
         double xpos, ypos;
@@ -423,12 +376,12 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
         int row = int(ypos / (SCREEN_HEIGHT / 3));
         int col = int(xpos / (SCREEN_WIDTH / 3));
 
-        if (board[row][col] == 0) { // Check if the cell is empty
-            board[row][col] = currentPlayer; // Set the cell to the current player
+        if (board[row][col] == 0) {                                         // checking whether the cell is empty or not
+            board[row][col] = currentPlayer;                                // setting the current player's symbol in the cell
 
-            checkWinner(); // Check for a winner or a draw
+            checkWinner();                                                  // checking for the winner after each move 
 
-            // If the game is not over, switch to the other player
+                                                                            // if the game is not over, switch to the next player
             if (!gameOver) {
                 currentPlayer = (currentPlayer == 1) ? 2 : 1;
             }
@@ -441,23 +394,23 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 
 
 int main(int argc, char** argv) {
-    // Initialize GLUT
+                                                                                    // initializing GLUT
     glutInit(&argc, argv);
 
-    // Initialize GLFW
+                                                                                     // initializing GLFW
     if (!glfwInit()) return -1;
 
-    // Create a GLFW window
+                                                                                     // creating a window with a specific size and title
     GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Tic Tac Toe", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
     }
 
-    // Set the current context
+                                                                                    // setting the window position to the center of the screen
     glfwMakeContextCurrent(window);
 
-    // Set up the viewport
+                                                                                    // setting the viewport and projection matrix for the window
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -465,16 +418,14 @@ int main(int argc, char** argv) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // Load textures or other one-time setup code
-    // loadGridTexture(); // Uncomment this if you have implemented texture loading
 
-    // Initialize the game board
+                                                                                    // Initialize the game board
     initBoard();
 
-    // Start the main loop
+                                                                                     // Start the main loop
     mainLoop(window);
 
-    // Terminate GLFW
+                                                                                     // Terminate GLFW
     glfwTerminate();
     return 0;
 }
