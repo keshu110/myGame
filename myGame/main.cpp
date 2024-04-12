@@ -22,27 +22,30 @@ void initBoard();
 void waitFor(float seconds);
 void mainLoop(GLFWwindow *window);
 void loadGridTexture();
-void drawAnimatedX(int i, int j);
-void drawAnimatedO(int i, int j);
 void drawFancyText(const char* text, float x, float y);
 void drawRoundedRectangle(float x, float y, float width, float height, float radius, int num_segments);
 void drawCenteredText(const char* text, float x, float y, float width, float height);
 void displayGameOverMessage();
+void drawMenu();
+void handleMenuInput(GLFWwindow* window, int button, int action, int mods);
 
 
 
 
 
-                                                             // creating global variables
+// creating global variables
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 800;
 int board[3][3];                                             // 0 = empty, 1 = X, 2 = O
 int  currentPlayer = 1;                                     // starting with player 1
+GLuint gridTexture;
+
 
 
 bool gameOver = false;
 bool full = false;
 bool draw = false;
+bool showMenu = true;
 
                                                             // Function to initialize the game board
 void initBoard() {
@@ -69,22 +72,22 @@ void drawText(const char *text, float x, float y) {
 }
 
 void checkWinner() {
-                                                                                       // checking for win conditions
+                                                                  // checking for win conditions
     for (int line = 0; line < 3; ++line) {
-                                                                                       // Horizontal, Vertical check
+        // Horizontal, Vertical check
         if ((board[line][0] != 0 && board[line][0] == board[line][1] && board[line][1] == board[line][2]) ||
             (board[0][line] != 0 && board[0][line] == board[1][line] && board[1][line] == board[2][line])) {
             gameOver = true;
             return;
         }
     }
-                                                                                         // Diagonal check
+    // Diagonal check
     if ((board[0][0] != 0 && board[0][0] == board[1][1] && board[1][1] == board[2][2]) ||
         (board[0][2] != 0 && board[0][2] == board[1][1] && board[1][1] == board[2][0])) {
         gameOver = true;
         return;
     }
-                                                                                          // Check whether its a draw
+    // Check whether its a draw
     draw = true;
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -100,12 +103,15 @@ void checkWinner() {
     }
 }
 
+
+
+
 void drawX(int i, int j) {
     float x = j * (SCREEN_WIDTH / 3) + (SCREEN_WIDTH / 6);
     float y = i * (SCREEN_HEIGHT / 3) + (SCREEN_HEIGHT / 6);
     float size = 40;
     glColor3f(1.0, 0.0, 0.0); // Red color
-    glLineWidth(3.0); // Set line width
+    glLineWidth(9.0); // Set line width
     glBegin(GL_LINES);
     glVertex2f(x - size, y - size);
     glVertex2f(x + size, y + size);
@@ -114,67 +120,67 @@ void drawX(int i, int j) {
     glEnd();
 }
 
-void drawAnimatedX(int i, int j) {
-    float x = j * (SCREEN_WIDTH / 3) + (SCREEN_WIDTH / 6);
-    float y = i * (SCREEN_HEIGHT / 3) + (SCREEN_HEIGHT / 6);
-    float size = 40;
-
-                                                         // calculate scaling factor based on time for pulsating effect
-    float scaleFactor = 1.0f + 0.1f * sin(glfwGetTime() * 5);
-
-    glColor3f(1.0, 0.0, 0.0); // Red color
-    glLineWidth(9.0); // Set line width
-
-    // Apply scaling transformation
-    glPushMatrix();
-    glTranslatef(x, y, 0.0);
-    glScalef(scaleFactor, scaleFactor, 1.0);
-
-    glBegin(GL_LINES);
-    glVertex2f(-size, -size);
-    glVertex2f(size, size);
-    glVertex2f(size, -size);
-    glVertex2f(-size, size);
-    glEnd();
-
-    // Restore the original transformation
-    glPopMatrix();
-}
 
 
 
 
-void drawAnimatedO(int i, int j) {
+
+void drawO(int i, int j) {
     float x = j * (SCREEN_WIDTH / 3) + (SCREEN_WIDTH / 6);
     float y = i * (SCREEN_HEIGHT / 3) + (SCREEN_HEIGHT / 6);
     float radius = 40;
-
-    // Calculate scaling factor based on time for pulsating effect
-    float scaleFactor = 1.0f + 0.1f * sin(glfwGetTime() * 5);
-
+    int num_segments = 30;
     glColor3f(0.0, 0.0, 1.0); // Blue color
-    glLineWidth(3.0); // Set line width
-
-    // Apply scaling transformation
-    glPushMatrix();
-    glTranslatef(x, y, 0.0);
-    glScalef(scaleFactor, scaleFactor, 1.0);
-
-    int numSegments = 30;
+    glLineWidth(9.0); // Set line width
     glBegin(GL_LINE_LOOP);
-    for (int ii = 0; ii < numSegments; ii++) {
-        float theta = 2.0f * 3.14159f * float(ii) / float(numSegments);
+    for (int ii = 0; ii < num_segments; ii++) {
+        float theta = 2.0f * 3.14159f * float(ii) / float(num_segments);
         float dx = radius * cosf(theta);
         float dy = radius * sinf(theta);
-        glVertex2f(dx, dy);
+        glVertex2f(x + dx, y + dy);
     }
     glEnd();
-
-    // Restore the original transformation
-    glPopMatrix();
 }
 
 
+
+
+void drawMenu() {
+    // Clear the background to a neutral dark color
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // Draw a rectangle for the "Play" button with a highlight effect
+    float playButtonX = SCREEN_WIDTH / 2 - 150;
+    float playButtonY = SCREEN_HEIGHT / 2 - 50;
+    float playButtonWidth = 300;
+    float playButtonHeight = 100;
+
+    // Button background
+    glColor3f(0.3f, 0.3f, 0.3f); // Dark gray
+    drawRoundedRectangle(playButtonX, playButtonY, playButtonWidth, playButtonHeight, 20.0f, 10);
+
+    // Button highlight
+    glColor4f(1.0f, 1.0f, 1.0f, 0.1f); // Soft white highlight
+    drawRoundedRectangle(playButtonX, playButtonY - playButtonHeight * 0.1f, playButtonWidth, playButtonHeight * 0.7f, 20.0f, 10);
+
+    // Draw the "Play" text centered in the button
+    glColor3f(1.0f, 1.0f, 1.0f); // White color for text
+    drawCenteredText("Play", playButtonX, playButtonY, playButtonWidth, playButtonHeight);
+}
+void handleMenuInput(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+
+        // Check if "Play" button is clicked
+        if (xpos >= SCREEN_WIDTH / 2 - 100 && xpos <= SCREEN_WIDTH / 2 + 100 &&
+            ypos >= SCREEN_HEIGHT / 2 - 25 && ypos <= SCREEN_HEIGHT / 2 + 25) {
+            showMenu = false; // Hide menu and start the game
+            initBoard(); // Initialize the game board for a new game
+        }
+    }
+}
 
 
 
@@ -233,7 +239,7 @@ void displayGameOverMessage() {
     float boxX = (SCREEN_WIDTH - boxWidth) / 2;
     float boxY = (SCREEN_HEIGHT - boxHeight) / 2;
     float cornerRadius = 20.0f;
-    int cornerSegments = 10; // More segments for a smoother corner
+    int cornerSegments = 50; // More segments for a smoother corner
 
     // Draw rounded rectangle
     drawRoundedRectangle(boxX, boxY, boxWidth, boxHeight, cornerRadius, cornerSegments);
@@ -246,77 +252,51 @@ void displayGameOverMessage() {
 // creating main loop for the game
 void mainLoop(GLFWwindow* window) {
     while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT); // clearing the screen
-        drawBoard(); // drawing the game board
+        glClear(GL_COLOR_BUFFER_BIT); // Clearing the screen
 
-        if (gameOver) {
-            // Set the winner message
-            displayGameOverMessage();
-            const char* message = "";
+        if (showMenu) {
+            drawMenu();
+            // Set the callback for the menu input
+            glfwSetMouseButtonCallback(window, handleMenuInput);
+        }
+        else {
+            drawBoard(); // Drawing the game board
 
-            const char* winner;
-            if (currentPlayer == 1) {
-                winner = "First player(X) Wins!";
-            }
-            else {
-                winner = "Socond player(O) Wins!";
-            }
-
-
-            bool isDraw = true;
-            for (int i = 0; i < 3; ++i) {
-                for (int j = 0; j < 3; ++j) {
-                    if (board[i][j] == 0) {
-                        isDraw = false;                           // If any cell is empty, it's not a draw
-                    }
+            if (gameOver) {
+                // Display the game over message
+                const char* winnerMessage;
+                if (draw) {
+                    winnerMessage = "It's a Draw!";
                 }
-            }
-            if (isDraw) {
-                winner = "Draw!";
+                else {
+                    winnerMessage = currentPlayer == 1 ? "Player X Wins!" : "Player O Wins!";
+                }
+
+                // The winner message will be displayed for 3 seconds
+                displayGameOverMessage();
+                drawText(winnerMessage, SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 100);
+
+                glfwSwapBuffers(window); // Swap the buffers to display the message
+                waitFor(5.0); // Wait for 5 seconds to show the message
+
+                // After showing the game over message, reset for the next game or exit
+                showMenu = true; // Show the menu again
+                initBoard(); // Reset the board for a new game
+                gameOver = false; // Reset the game over flag
+                draw = false; // Reset the draw flag
+                // Note: currentPlayer should probably not be reset here if you want the loser to start the next game
             }
 
-                                                                    // Display the winner message
-            char finalMessage[50];
-            snprintf(finalMessage, sizeof(finalMessage), "%s%s", message, winner);
-            drawText(finalMessage, SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2+100);
-            glfwSwapBuffers(window);                                  // swaping the front and back buffers
-            waitFor(10.0);                                             // 10 seconds delay
-            break; 
+            // Set the callback for the game input if the menu is not being shown
+            glfwSetMouseButtonCallback(window, mouseButtonCallback);
         }
 
-        glfwSwapBuffers(window);                                        // swaping the front and back buffers
-        glfwPollEvents();                                               // poll for and process events
+        glfwSwapBuffers(window); // Swapping the front and back buffers
+        glfwPollEvents(); // Poll for and process events
     }
 }
 
 
-
-
-
-
-
-
-
-
-void drawO(int i, int j) {
-    float x = j * (SCREEN_WIDTH / 3) + (SCREEN_WIDTH / 6);
-    float y = i * (SCREEN_HEIGHT / 3) + (SCREEN_HEIGHT / 6);
-    float radius = 40;
-    int num_segments = 30;
-    glColor3f(0.0, 0.0, 1.0); // Blue color
-    glLineWidth(3.0); // Set line width
-    glBegin(GL_LINE_LOOP);
-    for (int ii = 0; ii < num_segments; ii++) {
-        float theta = 2.0f * 3.14159f * float(ii) / float(num_segments);
-        float dx = radius * cosf(theta);
-        float dy = radius * sinf(theta);
-        glVertex2f(x + dx, y + dy);
-    }
-    glEnd();
-}
-
-
-GLuint gridTexture; // Global variable to store the texture ID
 
 void loadGridTexture() {
     // Generate texture ID
@@ -389,13 +369,19 @@ void drawBoard() {
     glEnd();
     glDisable(GL_TEXTURE_2D); // Disable texturing
 
-    // Draw X's and O's with animations
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            if (board[i][j] == 1) drawAnimatedX(i, j); // Add animation for drawing X
-            else if (board[i][j] == 2) drawAnimatedO(i, j); // Add animation for drawing O
-        }
-    }
+    // Draw X and O symbols
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (board[i][j] == 1) {
+				drawX(i, j);
+			}
+            else if (board[i][j] == 2) {
+				drawO(i, j);
+			}
+		}
+	}   
+
+
 
     // Display the end game message with fancy styling
     if (gameOver) {
@@ -455,11 +441,10 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 
 
 
-int main(int argc, char** argv) {
 
+int main(int argc, char** argv) {
     // Initialize GLUT
     glutInit(&argc, argv);
-    
 
     // Initialize GLFW
     if (!glfwInit()) return -1;
@@ -473,10 +458,6 @@ int main(int argc, char** argv) {
 
     // Set the current context
     glfwMakeContextCurrent(window);
-    // Set the mouse button callback
-    glfwSetMouseButtonCallback(window, mouseButtonCallback);
-    // Initialize the game board
-    initBoard();
 
     // Set up the viewport
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -485,6 +466,12 @@ int main(int argc, char** argv) {
     glOrtho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, -1, 1);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+    // Load textures or other one-time setup code
+    // loadGridTexture(); // Uncomment this if you have implemented texture loading
+
+    // Initialize the game board
+    initBoard();
 
     // Start the main loop
     mainLoop(window);
