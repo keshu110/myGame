@@ -17,7 +17,6 @@ void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
 void initBoard();
 void waitFor(float seconds);
 void mainLoop(GLFWwindow *window);
-void drawFancyText(const char* text, float x, float y);
 void drawRoundedRectangle(float x, float y, float width, float height, float radius, int num_segments);
 void drawCenteredText(const char* text, float x, float y, float width, float height);
 void displayGameOverMessage();
@@ -141,11 +140,11 @@ void drawO(int i, int j) {
 
 
 void drawMenu() {
-                                                                                  // clearing the background to a light blue color
-    glClearColor(0.68f, 0.85f, 0.90f, 1.0f);                                       // light blue color
+                                                                  // clearing the background to a light blue color
+    glClearColor(0.68f, 0.85f, 0.90f, 1.0f);                        // light blue color
     glClear(GL_COLOR_BUFFER_BIT);
 
-                                                                              // drawing a rectangle for the "Play" button with a highlight effect
+                                                                    // drawing a rectangle for the "Play" button with a highlight effect
     float playButtonX = SCREEN_WIDTH / 2 - 150;
     float playButtonY = SCREEN_HEIGHT / 2 - 50;
     float playButtonWidth = 300;
